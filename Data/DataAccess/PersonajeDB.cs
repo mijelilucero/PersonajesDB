@@ -28,8 +28,10 @@ namespace ClaseFormsBD.Data.DataAccess
                 }
             }
         }
+        
 
 
+        //Método para leer todos los registros
         public DataTable LeerPersonajes()
         {
             DataTable personajes = new DataTable();
@@ -52,19 +54,45 @@ namespace ClaseFormsBD.Data.DataAccess
         }
 
 
+
         // Método para crear un nuevo personaje
-        public int CrearPersonaje(string nombre, string raza, int nivelPoder)
+        public int CrearPersonaje(string nombre, string raza, int nivelPoder, DateTime fechaCreacion, string historia)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
 
-                string sql = "INSERT INTO personajes_dragon_ball (nombre, raza, nivel_poder) VALUES (@nombre, @raza, @nivelPoder)";
+                string sql = "INSERT INTO personajes_dragon_ball (nombre, raza, nivel_poder, fecha_creacion, historia) VALUES (@nombre, @raza, @nivelPoder, @fechaCreacion, @historia)";
                 using (MySqlCommand command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@nombre", nombre);
                     command.Parameters.AddWithValue("@raza", raza);
                     command.Parameters.AddWithValue("@nivelPoder", nivelPoder);
+                    command.Parameters.AddWithValue("@fechaCreacion", fechaCreacion);
+                    command.Parameters.AddWithValue("@historia", historia);
+                    return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+        // Método para actualizar un personaje
+        public int ActualizarPersonaje(int id, string nombre, string raza, int nivelPoder, DateTime fechaCreacion, string historia)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = "UPDATE personajes_dragon_ball SET nombre = @nombre, raza = @raza, nivel_poder = @nivelPoder, fecha_creacion = @fechaCreacion, historia = @historia WHERE id = @id";
+                using (MySqlCommand command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@nombre", nombre);
+                    command.Parameters.AddWithValue("@raza", raza);
+                    command.Parameters.AddWithValue("@nivelPoder", nivelPoder);
+                    command.Parameters.AddWithValue("@fechaCreacion", fechaCreacion);
+                    command.Parameters.AddWithValue("@historia", historia);
 
                     return command.ExecuteNonQuery();
                 }
@@ -72,7 +100,27 @@ namespace ClaseFormsBD.Data.DataAccess
         }
 
 
-        //Busca un personaje por su ID
+
+        // Método para eliminar un personaje
+        public int EliminarPersonaje(int id)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = "DELETE FROM personajes_dragon_ball WHERE id = @id";
+                using (MySqlCommand command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+        //Buscar un personaje por su ID
         public DataTable BuscarPersonajePorId(int id)
         {
             DataTable personaje = new DataTable();
@@ -95,10 +143,5 @@ namespace ClaseFormsBD.Data.DataAccess
 
             return personaje;
         }
-
-
-
-
-
     }
 }
